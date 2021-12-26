@@ -16,8 +16,7 @@ export default class ViewingActivityApp extends React.Component {
     return Object.assign(this.getStateFromStores(), {
       hideSynced: this.props.hideSynced,
       use24Clock: this.props.use24Clock,
-      pagesToLoad: this.props.pagesToLoad,
-      loadedPages: this.props.loadedPages
+      pagesToLoad: this.props.pagesToLoad === "0" ? "1" : this.props.pagesToLoad
     });
   }
 
@@ -40,7 +39,7 @@ export default class ViewingActivityApp extends React.Component {
   componentDidMount() {
     ActivityActionCreators.addWithReleaseDate(this.props.addWithReleaseDate);
     ActivityStore.addChangeListener(this._onChange.bind(this));
-    NetflixApiUtils.getActivities();
+    this._reloadPage();
   }
 
   componentWillUnmount() {
@@ -75,30 +74,19 @@ export default class ViewingActivityApp extends React.Component {
       BrowserStorage.set({prefs: storage.prefs}, true);
     });
     this.setState({pagesToLoad});
-  }
-
-  _loadedPagesChange(loadedPages){
-    this.setState({loadedPages});
+    this._reloadPage();
   }
 
   async _onNextPageClick() {
     this.setState({loading: true});
-    if (this.state.pagesToLoad === `All`) {
-      await NetflixApiUtils.getActivities(this.state.page, Number.MAX_VALUE);
-    } else {
-      await NetflixApiUtils.getActivities(this.state.page, this.state.page + parseInt(this.state.pagesToLoad));
-    }
-    this._loadedPagesChange(this.state.pagesToLoad);
+    this.state.page += parseInt(this.state.pagesToLoad);
+    this._reloadPage();
   }
 
   async _onPreviousPageClick(){
     this.setState({loading: true});
-
-    const currentPage = this.state.page - this.state.loadedPages - parseInt(this.state.pagesToLoad)
-    const desiredPage = this.state.page - this.state.loadedPages;
-    
-    await NetflixApiUtils.getActivities(currentPage, desiredPage);
-    this._loadedPagesChange(this.state.pagesToLoad);
+    this.state.page = Math.max(0, this.state.page - parseInt(this.state.pagesToLoad));
+    this._reloadPage();
   }
 
   _onToggleAll(event) {
@@ -145,6 +133,14 @@ export default class ViewingActivityApp extends React.Component {
   showSnackbar() {
     const snackbar = document.querySelector('.mdl-js-snackbar');
     snackbar.MaterialSnackbar.showSnackbar({message: this.state.message});
+  }
+
+  _reloadPage() {
+    if (this.state.pagesToLoad === `All`) {
+      NetflixApiUtils.getActivities(this.state.page, -1);
+    } else {
+      NetflixApiUtils.getActivities(this.state.page, this.state.page + parseInt(this.state.pagesToLoad));
+    }
   }
 
   render() {
@@ -206,14 +202,14 @@ export default class ViewingActivityApp extends React.Component {
               {browser.i18n.getMessage(`syncNow`)}
             </button>
 
+            <button onClick={this._onPreviousPageClick.bind(this)}
+              className='mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect'>
+              {browser.i18n.getMessage(`previousPage`)}
+            </button>
+
             <button onClick={this._onNextPageClick.bind(this)}
                     className='mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect'>
               {browser.i18n.getMessage(`nextPage`)}
-            </button>
-
-            <button onClick={this._onPreviousPageClick.bind(this)}
-                    className='mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect'>
-              {browser.i18n.getMessage(`previousPage`)}
             </button>
 
             <Select

@@ -62,6 +62,8 @@ const netflixApiUtils = {
     if (!desiredPage) {
       desiredPage = currentPage;
     }
+
+    var startingPage = currentPage;
     let loadAll = desiredPage === Number.MAX_VALUE;
     let isLastPage = false;
     const activities = [];
@@ -95,7 +97,7 @@ const netflixApiUtils = {
     const result = (await this.getActivitiesMetadata(activities)).map(this.parseActivity.bind(this));
     const parsedActivities = result.map(item => item.parsedItem);
     const promises = result.map(item => item.promise);
-    ActivityActionCreators.receiveActivities(parsedActivities, currentPage);
+    ActivityActionCreators.receiveActivities(parsedActivities, startingPage);
     const storage = await BrowserStorage.get(`options`);
     if (storage.options && storage.options.sendReceiveSuggestions && (await browser.permissions.contains({ origins: [`*://script.google.com/*`, `*://script.googleusercontent.com/*`] }))) {
       Request.send({
