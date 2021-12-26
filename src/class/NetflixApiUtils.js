@@ -68,13 +68,17 @@ const netflixApiUtils = {
     let isLastPage = false;
     const activities = [];
 
+    var addActivitiesWithEnoughViewTime = function(activities, _activities) {
+      activities.push(...(_activities.filter(a => (a.bookmark / a.duration) > 0.8)));
+    }
+
     if(currentPage < desiredPage){
       while (!isLastPage && (loadAll || currentPage < desiredPage)) { 
         ActivityActionCreators.updatePage(currentPage);
         const _activities = await this.getPageInformation(currentPage);
 
         if (_activities.length) {
-          activities.push(...(_activities.filter(a => (a.bookmark/a.duration)>0.8)));
+          addActivitiesWithEnoughViewTime(activities, _activities);
         } else {
           isLastPage = true;
         }
@@ -87,13 +91,14 @@ const netflixApiUtils = {
         const _activities = await this.getPageInformation(possibleCurrentPage);
 
         if (_activities.length) {
-          activities.push(...(_activities.filter(a => (a.bookmark/a.duration)>0.8)));
+          addActivitiesWithEnoughViewTime(activities, _activities);
           currentPage -= 1;
         } else {
           isLastPage = true;
         }
       }
     }
+
     const result = (await this.getActivitiesMetadata(activities)).map(this.parseActivity.bind(this));
     const parsedActivities = result.map(item => item.parsedItem);
     const promises = result.map(item => item.promise);
@@ -168,16 +173,21 @@ const netflixApiUtils = {
     if (type === `show`) {
       const title = activity.seriesTitle;
       const epTitle = activity.episodeTitle.trim();
-      let season = ``;
+      let season = 0;
       let isCollection = false;
-      const matches = activity.seasonDescriptor.match(/Season\s(\d+)/);
-      if (matches) {
-        season = parseInt(matches[1]);
+      if (activity.season !== undefined) {
+        season = parseInt(activity.season);
       } else {
-        if (activity.season) {
-          season = activity.season;
+        const matches = activity.seasonDescriptor.match(/Season\s(\d+)/);
+        if (matches) {
+          season = parseInt(matches[1]);
+        } else {
+          console.log(`Failed to parse season: \"${activity.season}\" for activity.`, activity);
+          if (activity.season) {
+            season = activity.season;
+          }
+          isCollection = true;
         }
-        isCollection = true;
       }
       itemProps = {
         epTitle,
@@ -201,6 +211,7 @@ const netflixApiUtils = {
     const item = new Item(itemProps);
     item.id = activity.movieID;
     item.date = date;
+    item.originalActivity = activity;
     const parsedItem = {
       add: false,
       netflix: item
@@ -322,3 +333,4 @@ const netflixApiUtils = {
 };
 
 export default netflixApiUtils;
+

@@ -156,6 +156,7 @@ export default class TraktWebAPIUtils {
           resolve({activity});
         },
         error: function (status, response) {
+          console.log(`Failed to get trakt data`, options);
           reject(status, response);
         }
       });
