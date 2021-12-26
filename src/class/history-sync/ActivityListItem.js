@@ -6,6 +6,7 @@ import TmdbImage from '../tmdb/TmdbImage';
 import ActivityActionCreators from './ActivityActionCreators';
 import TraktURLForm from './TraktURLForm';
 import TraktWebAPIUtils from './TraktWebAPIUtils';
+import ComparisonTableRow from "./ComparisonTableRow";
 
 class ActivityListItem extends React.Component {
   constructor(props) {
@@ -119,6 +120,23 @@ class ActivityListItem extends React.Component {
             <TraktURLForm activity={activity} show={this.state.showTraktURLForm} error={this.state.traktError} isUpdating={this.state.isUpdating}
                           click={this.state.traktClick} onSubmit={this._onSubmitTraktURL.bind(this)}/>
           </span>
+          <table class="mdl-data-table mdl-js-data-table">
+            <thead>
+              <tr>
+                <th class="mdl-data-table__cell--non-numeric">Property</th>
+                <th class="mdl-data-table__cell--non-numeric">Netflix</th>
+                <th class="mdl-data-table__cell--non-numeric">Trakt</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ComparisonTableRow propertyName="Title" netflixValue={netflixTitle} traktValue={traktTitle}/>
+              <ComparisonTableRow
+                propertyName="Season"
+                netflixValue={netflix.season ? netflix.season : netflix.season + ` (${netflix?.originalActivity?.seasonDescriptor})`}
+                traktValue={trakt?.season}/>
+              <ComparisonTableRow propertyName="Episode" netflixValue={netflix?.episode} traktValue={trakt?.number}/>
+            </tbody>
+          </table>
         </span>
         <span className='mdl-list__item-secondary-action' style={{display: !trakt ? 'block' : 'none'}}>
           {browser.i18n.getMessage(`notFoundTrakt`)}

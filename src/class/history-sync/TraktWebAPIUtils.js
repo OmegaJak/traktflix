@@ -156,7 +156,7 @@ export default class TraktWebAPIUtils {
           resolve({activity});
         },
         error: function (status, response) {
-          console.log(`Failed to get trakt data`, options);
+          console.log(`Failed to get trakt data for ${options.netflix.title}: ${options.netflix.epTitle}`, options);
           reject(status, response);
         }
       });
