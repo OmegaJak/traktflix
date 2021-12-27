@@ -268,6 +268,7 @@ describe(`Search`, () => {
 
   it(`titlesMatch() is true regardless of special characters`, () => {
     expect(episodeSearch.titlesMatch("Did I Stutter", "Did I Stutter?")).to.be.true;
+    expect(episodeSearch.titlesMatch("The End’s Beginning", "The End's Beginning")).to.be.true;
   });
 
   it(`titlesMatch() is true when special characters have synonymous meanings with words`, () => {
