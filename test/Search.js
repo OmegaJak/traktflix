@@ -273,4 +273,17 @@ describe(`Search`, () => {
   it(`titlesMatch() is true when special characters have synonymous meanings with words`, () => {
     expect(episodeSearch.titlesMatch("Pies and Tarts", "Pies & Tarts")).to.be.true;
   });
+
+  it(`titlesMatch() is true when titles differ only by end-of-title plural`, () => {
+    expect(episodeSearch.titlesMatch("Cake", "Cakes")).to.be.true;
+    expect(episodeSearch.titlesMatch("Advanced Safety Feature", "Advanced Safety Features")).to.be.true;
+  })
+
+  it(`titlesMatch() is true when differing only by 's`, () => {
+    expect(episodeSearch.titlesMatch("Phyllis's Wedding", "Phyllis' Wedding")).to.be.true;
+  })
+
+  it(`titlesMatch() is false for completely different titles`, () => {
+    expect(episodeSearch.titlesMatch("asdf", "fdsa")).to.be.false;
+  });
 });
