@@ -265,4 +265,12 @@ describe(`Search`, () => {
     expect(movieSearch.findItem.args[0]).to.deep.equal([{success, error}]);
     movieSearch.findItem.restore();
   });
+
+  it(`titlesMatch() is true regardless of special characters`, () => {
+    expect(episodeSearch.titlesMatch("Did I Stutter", "Did I Stutter?")).to.be.true;
+  });
+
+  it(`titlesMatch() is true when special characters have synonymous meanings with words`, () => {
+    expect(episodeSearch.titlesMatch("Pies and Tarts", "Pies & Tarts")).to.be.true;
+  });
 });

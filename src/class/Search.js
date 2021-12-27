@@ -54,7 +54,12 @@ export default class Search {
     return title
       .toLowerCase()
       .replace(/(^|\s)(a|an|the)(\s)/g, `$1$3`)
-      .replace(/\s/g, ``);
+      .replace(/&/g, `and`)
+      .replace(/[^\w\d\u00C0-\u00FF]/g, ``);
+  }
+
+  titlesMatch(firstTitle, secondTitle) {
+    return firstTitle && secondTitle && this.formatEpisodeTitle(firstTitle) === this.formatEpisodeTitle(secondTitle);
   }
 
   findEpisodeByTitle(show, response, options) {
@@ -64,7 +69,7 @@ export default class Search {
       if (episode.type === `episode`) {
         episode = episode.episode;
       }
-      if (this.item.epTitle && episode.title && this.formatEpisodeTitle(episode.title) === this.formatEpisodeTitle(this.item.epTitle)) {
+      if (this.titlesMatch(this.item.epTitle, episode.title)) {
         foundEpisode = episode;
         break;
       }

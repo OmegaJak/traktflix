@@ -178,7 +178,7 @@ const netflixApiUtils = {
       if (activity.season !== undefined) {
         season = parseInt(activity.season);
       } else {
-        const matches = activity.seasonDescriptor.match(/Season\s(\d+)/);
+        const matches = activity.seasonDescriptor.match(/\w+\s(\d+)/);
         if (matches) {
           season = parseInt(matches[1]);
         } else {
