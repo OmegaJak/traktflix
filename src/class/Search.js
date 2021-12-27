@@ -54,6 +54,7 @@ export default class Search {
     return title
       .toLowerCase()
       .replace(/(^|\s)(a|an|the)(\s)/g, `$1$3`)
+      .replace(/(part )(\d)$/, `$2`)
       .replace(/[’']s/, ``)
       .replace(/(.*)(s)$/, `$1`)
       .replace(/&/g, `and`)

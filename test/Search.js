@@ -287,4 +287,8 @@ describe(`Search`, () => {
   it(`titlesMatch() is false for completely different titles`, () => {
     expect(episodeSearch.titlesMatch("asdf", "fdsa")).to.be.false;
   });
+
+  it(`titlesMatch() is true for multi-part episodes formatted differently`, () => {
+    expect(episodeSearch.titlesMatch("Niagara: Part 1", "Niagara (1)")).to.be.true
+  })
 });
