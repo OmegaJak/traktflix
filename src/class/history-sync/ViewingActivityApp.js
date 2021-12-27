@@ -187,7 +187,7 @@ export default class ViewingActivityApp extends React.Component {
           {
             activities.length ? (
               <TmdbImageContainer>
-                <ActivityList activities={activities} dateFormat={this.state.use24Clock ? 'MMMM Do YYYY, H:mm:ss' : 'MMMM Do YYYY, h:mm:ss a'} />
+                <ActivityList activities={activities} dateFormat={this.state.use24Clock ? 'MMMM D YYYY H:mm' : 'MMMM D YYYY h:mm a'} />
               </TmdbImageContainer>
             ) : (
               <div>
